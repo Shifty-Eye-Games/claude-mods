@@ -1,0 +1,7 @@
+{
+  "name": "kb-health",
+  "description": "KB health in the status line: the kb-intelligence snapshot's verdicts, and whether kb-serve runs the code on disk",
+  "author": {
+    "name": "Tuncer Deniz"
+  }
+}

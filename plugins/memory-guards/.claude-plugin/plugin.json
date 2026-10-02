@@ -1,0 +1,7 @@
+{
+  "name": "memory-guards",
+  "description": "Refuses the footgun commands Claude's memory notes warn about, with the reason and the safe alternative",
+  "author": {
+    "name": "Tuncer Deniz"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "claude-mods",
+  "owner": {
+    "name": "Shifty Eye Games"
+  },
+  "metadata": {
+    "description": "Tuncer's Claude Code mods, kept in sync across his machines"
+  },
+  "plugins": [
+    {
+      "name": "memory-guards",
+      "source": "./plugins/memory-guards",
+      "description": "Refuses the footgun commands Claude's memory notes warn about, with the reason and the safe alternative"
+    },
+    {
+      "name": "kb-health",
+      "source": "./plugins/kb-health",
+      "description": "KB health in the status line on the machine that runs the KB; stays quiet everywhere else"
+    },
+    {
+      "name": "machine-tag",
+      "source": "./plugins/machine-tag",
+      "description": "Prefixes session titles with this machine's emoji tag, so pinned sessions show which computer they run on"
+    }
+  ]
+}

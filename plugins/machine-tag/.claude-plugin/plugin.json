@@ -1,0 +1,7 @@
+{
+  "name": "machine-tag",
+  "description": "Prefixes session titles with this machine's emoji tag (💻 MBP, 🪶 Air, 🎮 Rig, 🔥 5090), so pinned and listed sessions show which computer they run on",
+  "author": {
+    "name": "Tuncer Deniz"
+  }
+}
