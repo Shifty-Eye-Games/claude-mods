@@ -21,6 +21,11 @@
       "name": "machine-tag",
       "source": "./plugins/machine-tag",
       "description": "Prefixes session titles with this machine's emoji tag, so pinned sessions show which computer they run on"
+    },
+    {
+      "name": "pin-everywhere",
+      "source": "./plugins/pin-everywhere",
+      "description": "Pinning a session turns on Remote Control so it shows with its name and machine icon on every computer and the phone; unpinning turns it back off"
     }
   ]
 }
