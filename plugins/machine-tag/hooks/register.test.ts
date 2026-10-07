@@ -99,3 +99,8 @@ test('the 5090 PC reports a mixed-case name', async ($, on) => {
   engine(on, { computerName: 'win:TuncerHomePC' })
   expect((await $.classic.UserPromptSubmit(prompt('Render'))).sessionTitle).toBe('🔥 5090 · Render')
 })
+
+test('the 4090 work PC gets its tag', async ($, on) => {
+  engine(on, { computerName: 'win:Tuncer-PC-Work' })
+  expect((await $.classic.UserPromptSubmit(prompt('Render'))).sessionTitle).toBe('⚡ 4090 · Render')
+})

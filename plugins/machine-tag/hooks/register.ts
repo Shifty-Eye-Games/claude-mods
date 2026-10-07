@@ -9,6 +9,7 @@ const KINDS: [RegExp, string][] = [
   [/macbook air/i, '🪶 Air'],
   [/therig/i, '🎮 Rig'],
   [/tuncerhomepc/i, '🔥 5090'],
+  [/tuncer-pc-work/i, '⚡ 4090'],
   [/mac studio/i, '🖥️ Studio'],
   [/mac mini/i, '📦 mini'],
 ]
