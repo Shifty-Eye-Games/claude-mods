@@ -51,7 +51,7 @@ test('all healthy reads KB ok', async ($, on) => {
   const { clock, seen } = engine(on, { snap: snapshot(ALL_GOOD), pid: '57761' })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB ok')
+  expect(seen.status.at(-1)).toBe('🟢 KB ok')
 })
 
 test('failing and unknown verdicts show by name; staleness only on the second check', async ($, on) => {
@@ -61,23 +61,23 @@ test('failing and unknown verdicts show by name; staleness only on the second ch
   })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB: schedule drifted · levels unknown')
+  expect(seen.status.at(-1)).toBe('🔴 KB: schedule drifted · levels unknown')
   await clock.advance(FIVE_MIN)
-  expect(seen.status.at(-1)).toBe('KB: schedule drifted · levels unknown · snapshot 3 h old')
+  expect(seen.status.at(-1)).toBe('🔴 KB: schedule drifted · levels unknown · snapshot 3 h old')
 })
 
 test("pr-deploy's standing divergence is accepted", async ($, on) => {
   const { clock, seen } = engine(on, { snap: snapshot({ ...ALL_GOOD, 'pr-deploy': 'DIVERGED' }), pid: '57761' })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB ok')
+  expect(seen.status.at(-1)).toBe('🟢 KB ok')
 })
 
 test('pr-deploy verdicts other than diverged show', async ($, on) => {
   const { clock, seen } = engine(on, { snap: snapshot({ ...ALL_GOOD, 'pr-deploy': 'UNKNOWN' }), pid: '57761' })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB: pr-deploy unknown')
+  expect(seen.status.at(-1)).toBe('🔴 KB: pr-deploy unknown')
 })
 
 test('a stalled kb-refresh shows', async ($, on) => {
@@ -85,35 +85,35 @@ test('a stalled kb-refresh shows', async ($, on) => {
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
   await clock.advance(FIVE_MIN)
-  expect(seen.status.at(-1)).toBe('KB: kb-refresh last ok 4 h ago')
+  expect(seen.status.at(-1)).toBe('🔴 KB: kb-refresh last ok 4 h ago')
 })
 
 test('code newer than kb-serve (lib/ counts too) asks for a restart', async ($, on) => {
   const { clock, seen } = engine(on, { snap: snapshot(ALL_GOOD), pid: '57761', etime: '02:00:00', codeMtime: NOW - HOUR })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB: kb-serve restart needed')
+  expect(seen.status.at(-1)).toBe('🔴 KB: kb-serve restart needed')
 })
 
 test('nothing listening on :3901 reads as down', async ($, on) => {
   const { clock, seen } = engine(on, { snap: snapshot(ALL_GOOD) })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB: kb-serve down')
+  expect(seen.status.at(-1)).toBe('🔴 KB: kb-serve down')
 })
 
 test('a day-long uptime with older code is fine', async ($, on) => {
   const { clock, seen } = engine(on, { snap: snapshot(ALL_GOOD), pid: '1', etime: '01-02:03:04', codeMtime: NOW - 27 * HOUR })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB ok')
+  expect(seen.status.at(-1)).toBe('🟢 KB ok')
 })
 
 test('a missing snapshot is a problem, not silence', async ($, on) => {
   const { clock, seen } = engine(on, { pid: '57761' })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB: snapshot missing')
+  expect(seen.status.at(-1)).toBe('🔴 KB: snapshot missing')
 })
 
 test('off the KB Mac it stays silent', async ($, on) => {

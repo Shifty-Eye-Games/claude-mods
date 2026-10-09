@@ -128,7 +128,8 @@ async function check($: EngineInterface) {
     }
   }
   const shown = problems.length > 4 ? [...problems.slice(0, 4), `+${problems.length - 4} more`] : problems
-  $.ui.status(shown.length > 0 ? `KB: ${shown.join(' · ')}` : 'KB ok')
+  // The status line is plain text (no colour codes), so a coloured emoji carries the verdict.
+  $.ui.status(shown.length > 0 ? `🔴 KB: ${shown.join(' · ')}` : '🟢 KB ok')
 }
 
 export const register: Register = on => {
