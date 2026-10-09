@@ -25,7 +25,7 @@
     {
       "name": "pin-everywhere",
       "source": "./plugins/pin-everywhere",
-      "description": "Pinning a session turns on Remote Control so it shows with its name and machine icon on every computer and the phone; unpinning turns it back off"
+      "description": "Pinned sessions keep Remote Control on, reconnected after app restarts, so they show with their name and machine icon on every computer and the phone; unpinning turns it back off"
     }
   ]
 }

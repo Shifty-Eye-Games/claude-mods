@@ -1,6 +1,6 @@
 {
   "name": "pin-everywhere",
-  "description": "Pinning a session turns on its Remote Control once machine-tag has put the machine icon in the title, so it shows by name and icon on every other computer and the phone; unpinning turns it back off",
+  "description": "A pinned session keeps its Remote Control on (reconnected after app restarts) once machine-tag has put the machine icon in the title, so it shows by name and icon on every other computer and the phone; unpinning turns it back off",
   "author": {
     "name": "Tuncer Deniz"
   }
