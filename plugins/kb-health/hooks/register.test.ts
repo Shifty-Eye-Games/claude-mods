@@ -56,14 +56,28 @@ test('all healthy reads KB ok', async ($, on) => {
 
 test('failing and unknown verdicts show by name; staleness only on the second check', async ($, on) => {
   const { clock, seen } = engine(on, {
-    snap: snapshot({ ...ALL_GOOD, 'pr-deploy': 'DIVERGED', levels: 'UNKNOWN' }, '2026-10-02T15:00:00+00:00'),
+    snap: snapshot({ ...ALL_GOOD, schedule: 'DRIFTED', levels: 'UNKNOWN' }, '2026-10-02T15:00:00+00:00'),
     pid: '57761',
   })
   await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
   await clock.advance(0)
-  expect(seen.status.at(-1)).toBe('KB: pr-deploy diverged · levels unknown')
+  expect(seen.status.at(-1)).toBe('KB: schedule drifted · levels unknown')
   await clock.advance(FIVE_MIN)
-  expect(seen.status.at(-1)).toBe('KB: pr-deploy diverged · levels unknown · snapshot 3 h old')
+  expect(seen.status.at(-1)).toBe('KB: schedule drifted · levels unknown · snapshot 3 h old')
+})
+
+test("pr-deploy's standing divergence is accepted", async ($, on) => {
+  const { clock, seen } = engine(on, { snap: snapshot({ ...ALL_GOOD, 'pr-deploy': 'DIVERGED' }), pid: '57761' })
+  await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
+  await clock.advance(0)
+  expect(seen.status.at(-1)).toBe('KB ok')
+})
+
+test('pr-deploy verdicts other than diverged show', async ($, on) => {
+  const { clock, seen } = engine(on, { snap: snapshot({ ...ALL_GOOD, 'pr-deploy': 'UNKNOWN' }), pid: '57761' })
+  await $.session.start({ cwd: '/x', surface: 'terminal', isInteractive: true })
+  await clock.advance(0)
+  expect(seen.status.at(-1)).toBe('KB: pr-deploy unknown')
 })
 
 test('a stalled kb-refresh shows', async ($, on) => {

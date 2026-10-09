@@ -17,6 +17,10 @@ const SNAPSHOT_MAX_AGE_MS = 90 * 60_000 // the snapshot job runs every 30 minute
 const REFRESH_MAX_AGE_MS = 150 * 60_000 // kb-refresh runs hourly at :30 and skips 02:30
 // kb-intelligence-status.py's healthy verdicts; every other status shows, UNKNOWN and new ones included.
 const GOOD = new Set(['FRESH', 'IN_SYNC', 'INFO', 'OK'])
+// Known, accepted verdicts. pr-deploy DIVERGED is the publish lane's standing lag (the served tree carries local
+// publish commits origin/main doesn't have yet); a stuck hourly kb-refresh, the failure it could hide, shows as
+// "kb-refresh last ok ... ago". Its other verdicts still show.
+const ACCEPTED = new Set(['pr-deploy DIVERGED'])
 
 type Snapshot = { generated_at?: unknown; workflows?: { id: string; status: string }[] }
 
@@ -62,7 +66,7 @@ async function snapshotProblems($: EngineInterface, now: number): Promise<string
     return ['snapshot empty']
   }
   const problems = workflows
-    .filter(w => !GOOD.has(w.status))
+    .filter(w => !GOOD.has(w.status) && !ACCEPTED.has(`${w.id} ${w.status}`))
     .map(w => `${w.id} ${String(w.status).toLowerCase().replace(/_/g, ' ')}`)
   const age = now - parseIso(snap.generated_at)
   if (confirmed('snapshot', !(age <= SNAPSHOT_MAX_AGE_MS))) {
