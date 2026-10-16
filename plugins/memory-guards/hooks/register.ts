@@ -54,14 +54,21 @@ const BIG_DIR = /(?:^|[\\/])(?:[Gg]raves23|[Cc]astaway)[^\\/]*(?:[\\/]|$)/
 const BIG_ARG =
   /(?:^|[\s"'=:\\/(])(?:(?:[Gg]raves23|[Cc]astaway)[\w.-]*(?:[\\/]+MI)?|MI)(?:[\\/]+(?:[Aa]ssets|[Ll]ibrary))?[\\/]*(?:\*(?:\.\*)?)?(?=["'\s;&|)]|$)/
 // ponytail: a copy INTO MI/Assets itself also trips BIG_ARG; name the file in the destination path instead.
-// Bare `copy` (cmd, a PowerShell alias) is left out: it is an English word in commit messages and notes.
-const COPY =
-  /(?:^|[\s;&|(\\/"'`])(?:robocopy|xcopy|copy-item|cpi|cp|rsync|ditto|scp|tar|zip|7z)(?:\.exe)?\s/i
-const LINK =
-  /(?:^|[\s;&|(\\/"'`])(?:mklink(?:\.exe)?\s|ln\s|(?:new-item|ni)\s[^;&|\n]*-itemtype\s+['"]?(?:junction|hardlink|symboliclink))/i
+// The program must stand where a command starts, in one simple command (the
+// text split at ; & | and newlines): after sudo/env/xargs/then, `ssh <host> "`,
+// `cmd /c`, `powershell -Command`, `bash -c` or a path. So prose in a heredoc,
+// a commit message or a note that names robocopy or git clone beside Graves23
+// passes. ponytail: quotes are not parsed; an ssh "..." with no separator
+// inside stays one piece, which is what catches remote copies.
+const AT = String.raw`^\s*["'${'`'}(]*(?:(?:sudo|env|time|nohup|exec|xargs|then|do|else|start-process)\s+|[\w.]+=\S*\s+|ssh(?:\s+-\S+(?:\s+[^-\s"']\S*)?)*?\s+\S+\s+["']?|cmd(?:\.exe)?\s+\/[ck]\s+["']?|(?:powershell|pwsh)(?:\.exe)?(?:\s+-\S+)*?\s+["'&]*|(?:bash|sh|zsh)\s+-l?c\s+["']?)*(?:\S*[\\/])?`
+// Bare `copy` (cmd, a PowerShell alias) is left out: it is an English word.
+const COPY = new RegExp(`${AT}(?:robocopy|xcopy|copy-item|cpi|cp|rsync|ditto|scp|tar|zip|7z)(?:\\.exe)?\\s`, 'i')
+const LINK = new RegExp(
+  `${AT}(?:mklink(?:\\.exe)?\\s|ln\\s|(?:new-item|ni)\\s[^;&|\\n]*-itemtype\\s+['"]?(?:junction|hardlink|symboliclink))`,
+  'i',
+)
 // git's own subcommand (after options such as -C <path>), so a commit message saying "clone" passes.
-const GIT_COPY =
-  /(?:^|[\s;&|(\\/"'`])git(?:\.exe)?(?:\s+(?:-[Cc]\s+\S+|-\S+))*\s+(worktree\s+add|clone|archive|--work-tree)\b/
+const GIT_COPY = new RegExp(`${AT}git(?:\\.exe)?(?:\\s+(?:-[Cc]\\s+\\S+|-\\S+))*\\s+(worktree\\s+add|clone|archive|--work-tree)\\b`)
 const WORKFLOW_WORKTREE = /isolation\s*:\s*['"`]worktree/
 // PowerShell -EncodedCommand / -enc / -e <base64 UTF-16LE>: how commands reach the Windows PCs over SSH.
 const ENCODED = /\s-e[a-z]*\s+['"]?([A-Za-z0-9+/]{16,}={0,2})/gi
@@ -108,23 +115,21 @@ async function isBigRepo($: EngineInterface, dir: string): Promise<boolean> {
 // command that cds into the project names it, so the text rules still catch it.
 async function copiesBigProject($: EngineInterface, command: string): Promise<boolean> {
   const text = [command, ...[...command.matchAll(ENCODED)].map(m => decodePowerShell(m[1] ?? ''))].join('\n')
-  const isNamed = BIG_NAME.test(text) || BIG_ARG.test(text)
+  const pieces = text.split(/[;&|\n]+/)
   // A copy or link counts only with the project among its own arguments, so an
   // scp of a small script beside an ssh or heredoc naming Graves23 passes.
-  // ponytail: split at ; & | and newlines, quotes ignored; an ssh "..." with no
-  // separator inside stays one piece, which is what catches remote copies.
-  for (const piece of text.split(/[;&|\n]+/)) {
-    if ((COPY.test(piece) && BIG_ARG.test(piece)) || (LINK.test(piece) && (BIG_NAME.test(piece) || BIG_ARG.test(piece)))) {
-      return true
-    }
+  const named = (piece: string) => BIG_NAME.test(piece) || BIG_ARG.test(piece)
+  if (pieces.some(p => (COPY.test(p) && BIG_ARG.test(p)) || (LINK.test(p) && named(p)))) {
+    return true
   }
-  const git = GIT_COPY.exec(text)
-  if (git === null) {
+  const git = pieces.map(p => GIT_COPY.exec(p)?.[1]).find(sub => sub !== undefined)
+  if (git === undefined) {
     return false
   }
 
+  // git names the project anywhere in the command (`cd D:/Graves23 && git worktree add ..`).
   // A clone from inside the checkout may be of anything; the others act on the checkout itself.
-  return isNamed || (git[1] !== 'clone' && (await isBigRepo($, await $.session.cwd())))
+  return named(text) || (git !== 'clone' && (await isBigRepo($, await $.session.cwd())))
 }
 
 // The ways the engine and the desktop app make a worktree for a session or agent.

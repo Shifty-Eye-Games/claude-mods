@@ -97,7 +97,13 @@ test('copies of Graves23 and Castaway are refused from anywhere, every time', as
     String.raw`New-Item -ItemType Junction -Path D:\G2 -Target D:\Graves23`,
     'ln -s ~/.ub-test/graves23/MI/Assets ~/g2assets',
     String.raw`ssh therig "cd D:\Graves23; robocopy MI\Library D:\lib /E"`,
+    String.raw`ssh -p 22 tunce@100.116.214.46 "robocopy D:\Graves23_GCC\MI\Library E:\lib /E"`,
+    String.raw`ssh therig 'cmd /c "mklink /J D:\G2 D:\Graves23"'`,
     'cd D:/Graves23 && cp -r MI/Library /tmp/lib',
+    'sudo /bin/cp -R ~/.ub-test/graves23 /Volumes/T7/',
+    String.raw`C:\Windows\System32\robocopy.exe D:\Graves23 E:\g /E`,
+    'if [ -d MI ]; then rsync -a MI/Assets /tmp/a; fi',
+    'bash -c "git clone https://dev.azure.com/ShiftyEye/Graves23/_git/Graves23 /tmp/g"',
     // robocopy D:\Graves23\MI\Library D:\Graves23_bikediff\MI\Library /E, sent as PowerShell -EncodedCommand
     'ssh therig powershell -NoProfile -EncodedCommand cgBvAGIAbwBjAG8AcAB5ACAARAA6AFwARwByAGEAdgBlAHMAMgAzAFwATQBJAFwATABpAGIAcgBhAHIAeQAgAEQAOgBcAEcAcgBhAHYAZQBzADIAMwBfAGIAaQBrAGUAZABpAGYAZgBcAE0ASQBcAEwAaQBiAHIAYQByAHkAIAAvAEUA',
   ]) {
@@ -132,6 +138,15 @@ EOF
 scp -O /tmp/st.cmd therig:st.cmd`,
     String.raw`ls D:\Graves23\MI\Library; ln -s ~/notes/a.md ~/notes/b.md`,
     'git commit -m "Copy notes about Graves23 and MI/Library sizes"',
+    // prose about the rule, written through a heredoc
+    String.raw`cat >> notes.md <<'EOF'
+Never run git clone, git worktree add or robocopy on D:\Graves23 or MI\Library.
+The first guard refused an scp of a small script next to an ssh naming Graves23 folders.
+EOF`,
+    String.raw`python3 - <<'EOF'
+s = "after the first version refused an scp of a small script next to an ssh naming Graves23 folders; bare copy"
+EOF`,
+    'echo "use git clone https://dev.azure.com/ShiftyEye/Graves23/_git/Graves23 on a new machine only"',
     'cd D:/Graves23 && cp MI/Assets/Scripts/Foo.cs /tmp/',
     // git -C D:\Graves23 status, sent as PowerShell -EncodedCommand
     'ssh pcwork powershell -EncodedCommand ZwBpAHQAIAAtAEMAIABEADoAXABHAHIAYQB2AGUAcwAyADMAIABzAHQAYQB0AHUAcwA=',
