@@ -96,6 +96,8 @@ test('copies of Graves23 and Castaway are refused from anywhere, every time', as
     String.raw`cmd /c mklink /J D:\Graves23_shiftylogo\MI\Library D:\Graves23\MI\Library`,
     String.raw`New-Item -ItemType Junction -Path D:\G2 -Target D:\Graves23`,
     'ln -s ~/.ub-test/graves23/MI/Assets ~/g2assets',
+    String.raw`ssh therig "cd D:\Graves23; robocopy MI\Library D:\lib /E"`,
+    'cd D:/Graves23 && cp -r MI/Library /tmp/lib',
     // robocopy D:\Graves23\MI\Library D:\Graves23_bikediff\MI\Library /E, sent as PowerShell -EncodedCommand
     'ssh therig powershell -NoProfile -EncodedCommand cgBvAGIAbwBjAG8AcAB5ACAARAA6AFwARwByAGEAdgBlAHMAMgAzAFwATQBJAFwATABpAGIAcgBhAHIAeQAgAEQAOgBcAEcAcgBhAHYAZQBzADIAMwBfAGIAaQBrAGUAZABpAGYAZgBcAE0ASQBcAEwAaQBiAHIAYQByAHkAIAAvAEUA',
   ]) {
@@ -121,6 +123,16 @@ test('look-alikes pass: reading branches, named files, KB worktrees, other repos
     'git clone https://github.com/Shifty-Eye-Games/claude-mods ~/Claude/claude-mods-2',
     'cp -r ~/Claude/kb-dev /tmp/kb',
     'rg -n "git worktree add" ~/.claude/rules',
+    // false positives reported 2026-10-16: an scp of a small script beside Graves23 paths
+    String.raw`scp -O claude-sizes.ps1 tunce@100.116.214.46:claude-sizes.ps1 && ssh tunce@100.116.214.46 powershell -File claude-sizes.ps1 D:\Graves23_develop_untouched D:\Graves23_develop_untouched\MI\Library`,
+    String.raw`cat > /tmp/st.cmd <<'EOF'
+git -C D:\Graves23_intel status
+git -C D:\Graves23_collectible log -1
+EOF
+scp -O /tmp/st.cmd therig:st.cmd`,
+    String.raw`ls D:\Graves23\MI\Library; ln -s ~/notes/a.md ~/notes/b.md`,
+    'git commit -m "Copy notes about Graves23 and MI/Library sizes"',
+    'cd D:/Graves23 && cp MI/Assets/Scripts/Foo.cs /tmp/',
     // git -C D:\Graves23 status, sent as PowerShell -EncodedCommand
     'ssh pcwork powershell -EncodedCommand ZwBpAHQAIAAtAEMAIABEADoAXABHAHIAYQB2AGUAcwAyADMAIABzAHQAYQB0AHUAcwA=',
   ]) {

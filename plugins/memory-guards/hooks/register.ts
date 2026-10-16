@@ -54,8 +54,9 @@ const BIG_DIR = /(?:^|[\\/])(?:[Gg]raves23|[Cc]astaway)[^\\/]*(?:[\\/]|$)/
 const BIG_ARG =
   /(?:^|[\s"'=:\\/(])(?:(?:[Gg]raves23|[Cc]astaway)[\w.-]*(?:[\\/]+MI)?|MI)(?:[\\/]+(?:[Aa]ssets|[Ll]ibrary))?[\\/]*(?:\*(?:\.\*)?)?(?=["'\s;&|)]|$)/
 // ponytail: a copy INTO MI/Assets itself also trips BIG_ARG; name the file in the destination path instead.
+// Bare `copy` (cmd, a PowerShell alias) is left out: it is an English word in commit messages and notes.
 const COPY =
-  /(?:^|[\s;&|(\\/"'`])(?:robocopy|xcopy|copy-item|cpi|copy|cp|rsync|ditto|scp|tar|zip|7z)(?:\.exe)?\s/i
+  /(?:^|[\s;&|(\\/"'`])(?:robocopy|xcopy|copy-item|cpi|cp|rsync|ditto|scp|tar|zip|7z)(?:\.exe)?\s/i
 const LINK =
   /(?:^|[\s;&|(\\/"'`])(?:mklink(?:\.exe)?\s|ln\s|(?:new-item|ni)\s[^;&|\n]*-itemtype\s+['"]?(?:junction|hardlink|symboliclink))/i
 // git's own subcommand (after options such as -C <path>), so a commit message saying "clone" passes.
@@ -108,8 +109,14 @@ async function isBigRepo($: EngineInterface, dir: string): Promise<boolean> {
 async function copiesBigProject($: EngineInterface, command: string): Promise<boolean> {
   const text = [command, ...[...command.matchAll(ENCODED)].map(m => decodePowerShell(m[1] ?? ''))].join('\n')
   const isNamed = BIG_NAME.test(text) || BIG_ARG.test(text)
-  if ((COPY.test(text) && BIG_ARG.test(text)) || (LINK.test(text) && isNamed)) {
-    return true
+  // A copy or link counts only with the project among its own arguments, so an
+  // scp of a small script beside an ssh or heredoc naming Graves23 passes.
+  // ponytail: split at ; & | and newlines, quotes ignored; an ssh "..." with no
+  // separator inside stays one piece, which is what catches remote copies.
+  for (const piece of text.split(/[;&|\n]+/)) {
+    if ((COPY.test(piece) && BIG_ARG.test(piece)) || (LINK.test(piece) && (BIG_NAME.test(piece) || BIG_ARG.test(piece)))) {
+      return true
+    }
   }
   const git = GIT_COPY.exec(text)
   if (git === null) {
