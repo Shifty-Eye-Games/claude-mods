@@ -104,3 +104,9 @@ test('the 4090 work PC gets its tag', async ($, on) => {
   engine(on, { computerName: 'win:Tuncer-PC-Work' })
   expect((await $.classic.UserPromptSubmit(prompt('Render'))).sessionTitle).toBe('⚡ 4090 · Render')
 })
+
+test('the Mac mini gets its tag, replacing the old 📦 mini', async ($, on) => {
+  engine(on, { computerName: 'Tuncer’s Mac mini' })
+  expect((await $.classic.UserPromptSubmit(prompt('Mini Games'))).sessionTitle).toBe('🧊 Mini · Mini Games')
+  expect((await $.classic.UserPromptSubmit(prompt('📦 mini · Render'))).sessionTitle).toBe('🧊 Mini · Render')
+})

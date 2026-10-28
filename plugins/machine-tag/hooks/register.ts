@@ -11,11 +11,11 @@ const KINDS: [RegExp, string][] = [
   [/tuncerhomepc/i, '🔥 5090'],
   [/tuncer-pc-work/i, '⚡ 4090'],
   [/mac studio/i, '🖥️ Studio'],
-  [/mac mini/i, '📦 mini'],
+  [/mac mini/i, '🧊 Mini'],
 ]
 // Tags that may sit in front of a title and get replaced: every machine's default, the colored dots the first
 // version used, and this machine's earlier custom tags. Anything else (the person's own "🐛 Bug ·") is kept.
-const OLD_TAGS = ['🔵 MBP', '🟢 Air', '🔴 Rig', '🟡 5090', '🟠 Studio', '🟣 mini']
+const OLD_TAGS = ['🔵 MBP', '🟢 Air', '🔴 Rig', '🟡 5090', '🟠 Studio', '🟣 mini', '📦 mini']
 const GET = 'mcp__ccd_session_mgmt__get_session'
 const SET = 'mcp__ccd_session_mgmt__set_session_title'
 
