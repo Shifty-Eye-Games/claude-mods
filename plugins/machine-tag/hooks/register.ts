@@ -12,6 +12,7 @@ const KINDS: [RegExp, string][] = [
   [/tuncer-pc-work/i, '⚡ 4090'],
   [/mac studio/i, '🖥️ Studio'],
   [/mac mini/i, '🧊 Mini'],
+  [/mishu/i, '🐈 Mishu'],
 ]
 // Tags that may sit in front of a title and get replaced: every machine's default, the colored dots the first
 // version used, and this machine's earlier custom tags. Anything else (the person's own "🐛 Bug ·") is kept.

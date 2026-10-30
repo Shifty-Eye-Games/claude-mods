@@ -110,3 +110,8 @@ test('the Mac mini gets its tag, replacing the old 📦 mini', async ($, on) => 
   expect((await $.classic.UserPromptSubmit(prompt('Mini Games'))).sessionTitle).toBe('🧊 Mini · Mini Games')
   expect((await $.classic.UserPromptSubmit(prompt('📦 mini · Render'))).sessionTitle).toBe('🧊 Mini · Render')
 })
+
+test('the Mishu PC gets its tag', async ($, on) => {
+  engine(on, { computerName: 'win:Mishu' })
+  expect((await $.classic.UserPromptSubmit(prompt('Render'))).sessionTitle).toBe('🐈 Mishu · Render')
+})
